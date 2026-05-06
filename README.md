@@ -1,21 +1,10 @@
-# 🧠 Sentiment Classifier — PyTorch + HuggingFace + FastAPI + Vue.js
+# Sentiment Classifier — PyTorch + HuggingFace + FastAPI + Vue.js
 
-> Real-time text sentiment analysis powered by a fine-tuned DistilBERT model, served via FastAPI, and wrapped in a clean Vue.js interface.
-
-🔗 **Live Demo:** _coming soon_
-📸 **Demo GIF:** _coming soon_
+Real-time text sentiment analysis powered by a fine-tuned DistilBERT model, served via FastAPI, and wrapped in a clean Vue.js interface.
 
 ---
 
-## 📌 Overview
-
-This project fine-tunes `distilbert-base-uncased` on a labeled sentiment dataset and exposes predictions through a REST API. A Vue.js frontend lets users type any text and receive an instant positive/negative sentiment prediction with a confidence score.
-
-This is a full-stack ML application — model training, API serving, and a working UI — deployed and accessible without running a single notebook.
-
----
-
-## 🗂 Project Structure
+## Project Structure
 
 ```
 sentiment-classifier/
@@ -28,7 +17,8 @@ sentiment-classifier/
 ├── api/
 │   ├── main.py               # FastAPI app + /predict endpoint
 │   ├── schemas.py            # Pydantic request/response models
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── Dockerfile
 │
 ├── frontend/
 │   ├── src/
@@ -36,115 +26,135 @@ sentiment-classifier/
 │   │   ├── components/
 │   │   │   └── SentimentForm.vue
 │   │   └── main.js
-│   ├── public/
-│   └── package.json
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── package.json
+│   └── Dockerfile
 │
-├── .gitignore
-├── docker-compose.yml        # Optional: local full-stack dev
+├── pytorch_bert_example.ipynb
+├── Articles.csv
+├── Dockerfile                # Notebook / ML dev environment
+├── requirements.txt          # ML dependencies
+├── docker-compose.yml
 └── README.md
 ```
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer     | Technology                          |
 |-----------|-------------------------------------|
 | Model     | PyTorch + HuggingFace Transformers  |
 | API       | FastAPI + Uvicorn                   |
-| Frontend  | Vue.js 3 (Composition API)          |
-| Deployment| Railway / Render / AWS App Runner   |
+| Frontend  | Vue.js 3 (Composition API) + Vite   |
+| Dev Env   | Docker Compose                      |
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
-### 1. Clone the repo
+### Option A — Docker (recommended)
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/sentiment-classifier.git
-cd sentiment-classifier
+# 1. Train the model first (required before starting the api)
+docker compose run --rm shell bash -c "cd model && python train.py"
+
+# 2. Start everything
+docker compose up
 ```
 
-### 2. Train the model
+| Service  | URL                          |
+|----------|------------------------------|
+| Frontend | http://localhost:5173        |
+| API docs | http://localhost:8000/docs   |
+| Notebook | http://localhost:8888        |
+
 ```bash
-cd model
+# Open an interactive Python shell
+docker compose run --rm shell
+```
+
+### Option B — Local
+
+**Train the model**
+```bash
 pip install -r requirements.txt
-python train.py
+cd model && python train.py
 ```
 
-### 3. Run the API
+**Run the API**
 ```bash
 cd api
 pip install -r requirements.txt
 uvicorn main:app --reload
+# → http://localhost:8000
 ```
 
-API will be live at `http://localhost:8000`
-Interactive docs at `http://localhost:8000/docs`
-
-### 4. Run the frontend
+**Run the frontend**
 ```bash
 cd frontend
 npm install
 npm run dev
+# → http://localhost:5173
 ```
-
-Frontend will be live at `http://localhost:5173`
 
 ---
 
-## 📡 API Reference
+## API Reference
 
 ### `POST /predict`
 
 **Request**
 ```json
-{
-  "text": "This movie was absolutely fantastic!"
-}
+{ "text": "This article was incredibly insightful!" }
 ```
 
 **Response**
 ```json
-{
-  "label": "POSITIVE",
-  "confidence": 0.9871
-}
+{ "label": "POSITIVE", "confidence": 0.9871 }
+```
+
+### `GET /health`
+```json
+{ "status": "ok" }
 ```
 
 ---
 
-## 📊 Model Details
+## Model Details
 
 | Property        | Value                          |
 |-----------------|--------------------------------|
 | Base Model      | `distilbert-base-uncased`      |
-| Dataset         | _[your dataset here]_          |
+| Dataset         | `Articles.csv` (configurable)  |
 | Training Epochs | 3                              |
 | Optimizer       | AdamW                          |
-| Accuracy        | _[fill in after training]_     |
-| F1 Score        | _[fill in after training]_     |
+
+**Configuration via environment variables:**
+
+| Variable   | Default          | Description                    |
+|------------|------------------|--------------------------------|
+| `DATA_PATH`| `../Articles.csv`| Path to training CSV           |
+| `TEXT_COL` | `Article text`   | Column containing input text   |
+| `LABEL_COL`| `Category`       | Column containing labels       |
 
 ---
 
-## 🗺 Roadmap
+## Roadmap
 
 - [x] Project scaffold and README
+- [x] Docker Compose dev environment (notebook, shell, api, frontend)
+- [x] Model training pipeline (DistilBERT + HuggingFace Trainer)
+- [x] FastAPI `/predict` endpoint
+- [x] Vue.js frontend with live prediction
 - [ ] Data preprocessing pipeline
-- [ ] Fine-tune DistilBERT on sentiment dataset
-- [ ] FastAPI `/predict` endpoint
-- [ ] Vue.js frontend with live prediction
+- [ ] Fine-tune on labeled sentiment dataset
 - [ ] Deploy API to Railway/Render
 - [ ] Add live demo URL + demo GIF to README
 
 ---
 
-## 🤝 Contributing
-
-This is a portfolio project. Issues and suggestions are welcome.
-
----
-
-## 📄 License
+## License
 
 MIT
