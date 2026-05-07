@@ -145,9 +145,9 @@ npm run dev
 
 - [x] Project scaffold and README
 - [x] Docker Compose dev environment (notebook, shell, api, frontend)
-- [x] Model training pipeline (DistilBERT + HuggingFace Trainer)
-- [x] FastAPI `/predict` endpoint
-- [x] Vue.js frontend with live prediction
+- [ ] Model training pipeline (DistilBERT + HuggingFace Trainer)
+- [ ] FastAPI `/predict` endpoint
+- [ ] Vue.js frontend with live prediction
 - [ ] Data preprocessing pipeline
 - [ ] Fine-tune on labeled sentiment dataset
 - [ ] Deploy API to Railway/Render
